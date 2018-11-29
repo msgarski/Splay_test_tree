@@ -187,25 +187,7 @@ int licznik_while=0;
                 if(x==p->klucz)     ///klucz znaleziony, wiec jaka rotacja jest potrzebna?
                 {
                     cout<<"pierwszy lewy wezel i jest klucz"<<endl;
-                    if(grandpa_p!=parent_p)     ///klucz jest > 1 poziom oddalony od roota
-                    {
-                        if(grandpa_p->left==parent_p)
-                        {
-                            ///rotacja podwójna homo lewa
-                            cout<<"Rotacja podwojna homo lewa"<<endl;
-                        }
-                        else
-                        {
-                            ///rotacja podwójna hetero prawa rodzica, potem lewa p
-                            cout<<"Rotacja podwojna hetero prawa rodzica, potem lewa p"<<endl;
-                        }
-
-                    }
-                    else
-                    {
-                        ///rotacja pojedyncza prawa
-                        cout<<"Rotacja pojedyncza prawa"<<endl;
-                    }
+                    break;
                 }
                 ///skoro to nie ten wezel, to patrzymy, w ktora strone teraz...
                 else if(x<p->klucz) /// czy w lewo...
@@ -243,6 +225,37 @@ int licznik_while=0;
         cout<<"Nie udalo sie znalezc wezla o tym kluczu"<<endl<<"Nie zostal wiec usuniety..."<<endl<<endl;
         return;
     }
+
+///********************************************************************************************************
+    /// Obsluga wszystkich rotacji dla lewego i prawego drzewa:
+///********************************************************************************************************
+
+    if(grandpa_p!=parent_p)     ///klucz jest > 1 poziom oddalony od roota
+    {
+        if(grandpa_p->left==parent_p)
+        {
+            ///rotacja podwójna homo lewa
+            cout<<"Rotacja podwojna homo lewa"<<endl;
+        }
+        else
+        {
+            ///rotacja podwójna hetero prawa rodzica, potem lewa p
+            cout<<"Rotacja podwojna hetero prawa rodzica, potem lewa p"<<endl;
+        }
+
+    }
+    else
+    {
+        ///rotacja pojedyncza prawa
+        cout<<"Rotacja pojedyncza prawa"<<endl;
+    }
+
+
+
+
+
+
+
 
 cout<<"wezel znaleziony"<<endl;
 //dotad ok******************************************************************************************
