@@ -1,0 +1,8 @@
+# depslib dependency file v1.0
+1543484939 source:d:\uniwersytet 3-go wieku\testowanie\splay_tree_test\main.cpp
+	<iostream>
+	<cstdlib>
+	<cstring>
+	<string>
+	<ctime>
+

@@ -159,7 +159,7 @@ cout<<"Rozpoczynam usuwanie wezla o kluczu: "<<x<<endl;
 ///sprawdzenie istnienia drzewa:
     if(!*root)
     {
-        cout<<"Drzewo nie zawiera zadnych wezlow!"<<endl;
+        cout<<"Drzewo nie zawiera zadnych wezlow!, usuwanie nieudane"<<endl;
         return;
     }
 
@@ -167,20 +167,26 @@ cout<<"Rozpoczynam usuwanie wezla o kluczu: "<<x<<endl;
 Node *p=*root;
 Node *grandpa_p=nullptr;
 Node *parent_p=p;
-
+cout<<"przed whilem"<<endl;
+int licznik_while=0;
     while(p!=nullptr&&x!=p->klucz)
     {
+        licznik_while++;
+        cout<<"wchodzimy do while "<<licznik_while<<" raz"<<endl;
         /// Gdy szukany wezel jest w lewym poddrzewie:
         if(x<p->klucz)
         {
+            cout<<"jestem w lewym poddrzewie"<<endl;
             if(p->left)     /// czy lewy wezel istnieje
             {
+                cout<<"lewy wezel istnieje"<<endl;
                 grandpa_p=parent_p;
                 parent_p=p;
                 p=p->left;  ///przesuwam p krok dalej, wiec inne wskazniki tez musza nadazac
 
                 if(x==p->klucz)     ///klucz znaleziony, wiec jaka rotacja jest potrzebna?
                 {
+                    cout<<"pierwszy lewy wezel i jest klucz"<<endl;
                     if(grandpa_p!=parent_p)     ///klucz jest > 1 poziom oddalony od roota
                     {
                         if(grandpa_p->left==parent_p)
@@ -204,12 +210,14 @@ Node *parent_p=p;
                 ///skoro to nie ten wezel, to patrzymy, w ktora strone teraz...
                 else if(x<p->klucz) /// czy w lewo...
                 {
+                    cout<<"wybor lewej drogi do drugiego wezla"<<endl;
                     grandpa_p=parent_p;
                     parent_p=p;
                     p=p->left;
                 }
                 else                /// czy w prawo
                 {
+                    cout<<"wybor prawej drogi do drugiego wezla"<<endl;
                     grandpa_p=parent_p;
                     parent_p=p;
                     p=p->right;
@@ -219,17 +227,13 @@ Node *parent_p=p;
             else    ///nie ma lewego wezla, wiec nie ma x w drzewie
             {
                 cout<<"BLAD!!! Wezla o kluczu "<<x<<" , nie ma w drzewie."<<endl;
+                p=nullptr;
             }
 
         }
         else ///czyli szukany x jest po prawej stronie drzewa
         {
-
-
-
-
-
-
+            cout<<"wejscie w prawe niedokonczone poddrzewo"<<endl;
 
         }
     }
@@ -240,11 +244,12 @@ Node *parent_p=p;
         return;
     }
 
-
+cout<<"wezel znaleziony"<<endl;
 //dotad ok******************************************************************************************
     ///  czy p,  vel root, ma potomstwo?
     if(p==*root)                ///to powinno byc pewnikiem, tego nie trzeba sprawdzac!!!!
     {
+        cout<<"jestem w szukaniu poprzednika"<<endl;
         //p=*root;
         /// Gdy root nie ma potomkow:
         if(p->left==nullptr&&p->right==nullptr)
@@ -257,14 +262,18 @@ Node *parent_p=p;
         ///ma tylko lewe poddrzewo:
         else if(!p->right)
         {
+            cout<<"ma tylko lewe poddrzewo"<<endl;
             *root=p->left;
             delete p;
         }
         ///ma tylko prawe potomstwo:
-        else
+        else if(!p->left)
+        {
+            cout<<"ma tylko lewe poddrzewo"<<endl;
             *root=p->right;
             delete p;
             return;
+        }
     }
     ///***********************************************************************************************
     ///
@@ -272,14 +281,17 @@ Node *parent_p=p;
     ///podciagamy za soba rodzica szukanego poprzednika
     ///
     ///***********************************************************************************************
+    //p=*root;
+    cout<<"przed wyszukiwaniem poprzednika"<<endl;
     Node* poprzednik=p->left;
     Node *rodzic_poprzednika=p;
+    cout<<"przed whilem w szukaniu poprzednika"<<endl;
     while(poprzednik->right)
     {
         rodzic_poprzednika=poprzednik;
         poprzednik=poprzednik->right;
     }
-
+cout<<"poprzednik "<<poprzednik->klucz<<endl;
     ///mamy poprzednika, teraz go obejrzymy i wytniemy...
 
     if(poprzednik==p->left) ///gdy poprzednik jest tuz obok p, po lewej stronie,
@@ -383,7 +395,21 @@ int main()
     srand(time(0));
 
 Node *drzewo=nullptr;
+
 wstawienie(&drzewo, 100);
+wstawienie(&drzewo, 50);
+wstawienie(&drzewo, 40);
+wstawienie(&drzewo, 30);
+wstawienie(&drzewo, 20);
+wstawienie(&drzewo, 200);
+wstawienie(&drzewo, 60);
+szukaj(drzewo, 30);
+szukaj(drzewo, 35);
+
+//usuwanie(&drzewo, 50);
+preorder_licz(drzewo);
+usuwanie(&drzewo, 60);
+preorder_licz(drzewo);
 cout<<"ok"<<endl;
 
 
