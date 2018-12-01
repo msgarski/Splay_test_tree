@@ -17,8 +17,106 @@ struct Node
     Node *left;
 
 };
-//******************************************************************************************************************
-///funkcja do zaznaczania w tablicy ju¿ istniejacych wezlow
+void preorder(Node *root)
+{
+    if(root)
+    {
+        cout<<root->klucz<<" "<<"zawartosc jego tablicy: ";
+            for(int i=0; i<16; i++)
+            {
+                if(root->ch[i])
+                cout<<root->ch[i];
+            }
+            cout<<endl;
+            licznik++;
+        preorder(root->left);
+        preorder(root->right);
+    }
+    return;
+}
+
+void szukanie_pre_grand(Node * grand, Node **pre_grand, Node * root)
+{
+*pre_grand=nullptr; //to rodzic p, ktory sie przyda, gdy trzeba bedzie podpiac poprzednika w miejsce p
+Node *dziad=root;        //wskaznik wedrujacy p
+int k=grand->klucz;
+cout<<"Rozpoczynam szukanie wezla o kluczu dziadka: "<<grand->klucz<<endl;
+
+    while(k!=dziad->klucz)      //rob to, co w petli, az bedzie sukces lub sciana
+    {
+        *pre_grand=dziad;
+        if(dziad->klucz<k)
+            dziad=dziad->right;
+        else
+            dziad=dziad->left;
+    }
+    ///zakonczyl szukanie, ale czy znalazl???:
+    if (!dziad)     //jednak nie znalazl  p, wychodzimy z funkcji
+    {
+        cout<<"Nie udalo sie znalezc wezla o tym kluczu"<<endl<<"Nie zostal wiec usuniety..."<<endl<<endl;
+        return;
+    }
+    ///jadnak znalazl dziada, a jego rodzic to pre_grand
+}
+///**************************************************************************************************************
+
+///     BLOK FUNKCJI ROTUJACYCH
+
+///**************************************************************************************************************
+void rotacja_R(Node ** parent)  ///ok dla rodzic==root
+{
+
+    Node * x=(*parent)->left;
+    (*parent)->left=x->right;
+    x->right=*parent;
+    *parent=x;
+}
+
+void rotacja_RR(Node ** grand, Node *root)
+{
+    /*
+    Node *pre_grandpa_p=nullptr;
+    if(*grand!=root)///znajdowanie pradziadka
+    {
+        szukanie_pre_grand(*grand, &pre_grandpa_p, root);
+        //cout<<"pradziadek wezla o kluczu "<<p->klucz<<" to "<<pre_grandpa_p->klucz<<endl;
+        ///mamy pradziadka naszego wezla!!!!!!!!!
+    }
+    else
+    {
+        ///pre_grandpa_p=*grand;
+    }
+    */
+    Node * x=(*grand)->left;
+    (*grand)->left=x->right;
+    x->right=*grand;
+    *grand=x;
+}
+
+void rotacja_LR(Node ** grand, Node ** parent, Node ** p)
+{
+
+}
+
+void rotacja_L(Node ** parent)  ///chyba ok dla rodzic==root
+{
+    Node * x=(*parent)->right;
+    (*parent)->right=x->left;
+    x->left=*parent;
+    *parent=x;
+}
+void rotacja_LL(Node ** grand, Node** parent, Node ** p)
+{
+
+}
+
+void rotacja_RL(Node ** grand, Node ** parent, Node ** p)
+{
+
+}
+///********************************************************************************************************
+//*********************************************************************************************************
+///funkcja do zaznaczania w tablicy juz istniejacych wezlow
     void inorder_stan(Node *root, bool *a)///gotowa
 {
          if(root)
@@ -32,7 +130,7 @@ struct Node
     return;
 }
 //********************************************************************************************************
-int wstawienie(Node **root, int klucz)///gotowa do sprawdzenia oprócz tablicy
+int wstawienie(Node **root, int klucz)///gotowa do sprawdzenia oprÃ³cz tablicy
 {
 ///zaczynamy szukac miejsca na nowy wezel
         Node *p=*root;
@@ -149,7 +247,6 @@ void szukaj(Node *root, int szukany)///gotowa
 
     return;
 }
-
 //********************************************************************************************************************
 void usuwanie(Node **root, int x)
 {
@@ -164,11 +261,17 @@ cout<<"Rozpoczynam usuwanie wezla o kluczu: "<<x<<endl;
     }
 
 ///szukanie p- i jednoczesne podciaganie za soba dziadka, oraz samego rodzica:
-Node *p=*root;
-Node *grandpa_p=nullptr;
-Node *parent_p=p;
+
 cout<<"przed whilem"<<endl;
-int licznik_while=0;
+Node *p=nullptr;
+///duza petla while: szuka, znajduje, rotuje az do korzenia
+///while(x!=(*root)->klucz) ///lub p!=root
+///{
+    p=*root;
+    Node *grandpa_p=nullptr;
+    Node *parent_p=p;
+
+    int licznik_while=0;
     while(p!=nullptr&&x!=p->klucz)
     {
         licznik_while++;
@@ -188,6 +291,24 @@ int licznik_while=0;
                 {
                     cout<<"pierwszy lewy wezel i jest klucz"<<endl;
                     break;
+                    /*if(grandpa_p!=parent_p)     ///klucz jest > 1 poziom oddalony od roota
+                    {
+                        if(grandpa_p->left==parent_p)
+                        {
+                            ///rotacja podwÃ³jna homo lewa
+                            cout<<"Rotacja podwojna homo lewa"<<endl;
+                        }
+                        else
+                        {
+                            ///rotacja podwÃ³jna hetero prawa rodzica, potem lewa p
+                            cout<<"Rotacja podwojna hetero prawa rodzica, potem lewa p"<<endl;
+                        }
+                    }
+                    else
+                    {
+                        ///rotacja pojedyncza prawa
+                        cout<<"Rotacja pojedyncza prawa"<<endl;
+                    }*/
                 }
                 ///skoro to nie ten wezel, to patrzymy, w ktora strone teraz...
                 else if(x<p->klucz) /// czy w lewo...
@@ -210,6 +331,7 @@ int licznik_while=0;
             {
                 cout<<"BLAD!!! Wezla o kluczu "<<x<<" , nie ma w drzewie."<<endl;
                 p=nullptr;
+                return;
             }
 
         }
@@ -226,29 +348,110 @@ int licznik_while=0;
         return;
     }
 
+
 ///********************************************************************************************************
     /// Obsluga wszystkich rotacji dla lewego i prawego drzewa:
 ///********************************************************************************************************
+cout<<"przed obsluga rotacji"<<endl;
+cout<<"root "<<(*root)->klucz<<" root left "<<(*root)->left->klucz<<" grand "<<grandpa_p->klucz<<" rodzic "<<parent_p->klucz<<endl;
 
-    if(grandpa_p!=parent_p)     ///klucz jest > 1 poziom oddalony od roota
+cout<<"wew obslugi rotacji"<<endl;
+///*****************************************************************************************************************
+///obsluga pojedynczych rotacji:
+///*****************************************************************************************************************
+    if(parent_p==*root)   /// rodzic=dziadek to root, wiec wystarczy pojedyncza rotacja w lewo lub w prawo
     {
-        if(grandpa_p->left==parent_p)
+        if(x<(*root)->klucz)
         {
-            ///rotacja podwójna homo lewa
-            cout<<"Rotacja podwojna homo lewa"<<endl;
+            ///rotacja pojedyncza w prawo zrobiona do koÅ„ca
+            cout<<"Rotacja pojedyncza w prawo"<<endl;
+            rotacja_R(&parent_p);
+            *root=parent_p;
+            cout<<"root po rotacji "<<(*root)->klucz<<p->klucz<<endl;
+            preorder(*root);///do usuniecia
         }
         else
         {
-            ///rotacja podwójna hetero prawa rodzica, potem lewa p
-            cout<<"Rotacja podwojna hetero prawa rodzica, potem lewa p"<<endl;
+            /// rotacja pojedyncza w lewo
+            cout<<"Rotacja pojedyncza w lewo"<<endl;
+            rotacja_L(&parent_p);
+            *root=parent_p;
+            cout<<"root po rotacji "<<(*root)->klucz<<p->klucz<<endl;
+            preorder(*root);///do usuniecia
+        }
+    }
+///***************************************************************************************************************
+/// gdy po podwojnej rotacji zmieni sie root
+///***************************************************************************************************************
+        else if(grandpa_p==*root)
+        {
+            if(grandpa_p->left==parent_p)
+            {
+                if(parent_p->left==p)   /// jednorodna
+                {
+                    ///rotacja podwojna w prawo rodzic w prawo p
+                    cout<<"Rotacja podwojna w prawo"<<endl;
+                    rotacja_RR(&grandpa_p, *root);
+                }
+                else    /// niejednorodna
+                {
+                    ///rotacja podwojna w lewo p i w prawo p
+                }
+            }
+            else    /// jesli grandpa_p->right==p
+            {
+                //if((*root)->left->left==p){rotacja_RR(&grandpa_p);*root=grandpa_p;}
+                if(parent_p->right==p) ///jednorodna
+                {
+                    ///rotacja podwojna w lewo rodzic w lewo p
+                }
+                else    ///     niejednorodna
+                {
+                    ///rotacja podwojna w prawo p w lewo p
+                }
+            }
+        }
+///***********************************************************************************************************************
+///przypadek, gdy wskutek rotacji nie zmieni sie root:
+///***********************************************************************************************************************
+        else
+        {
+            if(grandpa_p->left==parent_p)
+            {
+                if(parent_p->left==p)   /// jednorodna
+                {
+                    ///rotacja podwojna w prawo rodzic w prawo p
+                    cout<<"Rotacja podwojna w prawo"<<endl;
+
+                    rotacja_RR(&grandpa_p, *root);
+                }
+                else    /// niejednorodna
+                {
+                    ///rotacja poswojna w lewo p i w prawo p
+                }
+            }
+            else    /// jesli grandpa_p->right==p
+            {
+                //if((*root)->left->left==p){rotacja_RR(&grandpa_p);*root=grandpa_p;}
+                if(parent_p->right==p) ///jednorodna
+                {
+                    ///rotacja podwojna w lewo rodzic w lewo p
+                }
+                else    ///     niejednorodna
+                {
+                    ///rotacja podwojna w prawo p w lewo p
+                }
+            }
         }
 
-    }
-    else
-    {
-        ///rotacja pojedyncza prawa
-        cout<<"Rotacja pojedyncza prawa"<<endl;
-    }
+///cout<<"przed rotacja "<<endl;
+///cout<<"root "<<(*root)->klucz<<" root left "<<(*root)->left->klucz<<" grand "<<grandpa_p->klucz<<" rodzic "<<parent_p->klucz<<endl;
+///cout<<"po rotacji"<<endl;
+/// cout<<"root "<<(*root)->klucz<<" root left "<<(*root)->left->klucz<<" grand "<<grandpa_p->klucz<<" rodzic "<<parent_p->klucz<<endl;
+///cout<<" root left left "<<(*root)->left->left->klucz<<endl;
+///" root left left "<<(*root)->left->left->klucz<<
+            cout<<"root po rotacji "<<(*root)->klucz<<endl;
+            preorder(*root);///do usuniecia
 
 
 
@@ -257,6 +460,31 @@ int licznik_while=0;
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
 cout<<"wezel znaleziony"<<endl;
 //dotad ok******************************************************************************************
     ///  czy p,  vel root, ma potomstwo?
@@ -290,7 +518,7 @@ cout<<"wezel znaleziony"<<endl;
     }
     ///***********************************************************************************************
     ///
-    /// A wiec ma obu potomków i potrzeba nam poprzednika:
+    /// A wiec ma obu potomkÃ³w i potrzeba nam poprzednika:
     ///podciagamy za soba rodzica szukanego poprzednika
     ///
     ///***********************************************************************************************
@@ -330,6 +558,7 @@ cout<<"poprzednik "<<poprzednik->klucz<<endl;
 
     return;
     }
+    */
 
 }
 
@@ -344,23 +573,7 @@ cout<<"poprzednik "<<poprzednik->klucz<<endl;
 
 
 ///funkcje przelatujace przez drzewo
-void preorder(Node *root)
-{
-    if(root)
-    {
-        cout<<root->klucz<<" "<<"zawartosc jego tablicy: ";
-            for(int i=0; i<16; i++)
-            {
-                if(root->ch[i])
-                cout<<root->ch[i];
-            }
-            cout<<endl;
-            licznik++;
-        preorder(root->left);
-        preorder(root->right);
-    }
-    return;
-}
+
 void preorder_licz(Node *root)
 {
     licznik=0;
@@ -416,13 +629,16 @@ wstawienie(&drzewo, 30);
 wstawienie(&drzewo, 20);
 wstawienie(&drzewo, 200);
 wstawienie(&drzewo, 60);
-szukaj(drzewo, 30);
-szukaj(drzewo, 35);
+//szukaj(drzewo, 30);
+//szukaj(drzewo, 35);
 
 //usuwanie(&drzewo, 50);
+//preorder_licz(drzewo);
+
+
+usuwanie(&drzewo, 40);
 preorder_licz(drzewo);
-usuwanie(&drzewo, 60);
-preorder_licz(drzewo);
+cout<<"root"<<drzewo->klucz<<endl;
 cout<<"ok"<<endl;
 
 
