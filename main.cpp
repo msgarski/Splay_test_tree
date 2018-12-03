@@ -146,13 +146,21 @@ void rotacja_L(Node ** parent)  ///chyba ok dla rodzic==root
     x->left=*parent;
     *parent=x;
 }
-void rotacja_LL(Node ** grand, Node** parent, Node ** p)
+void rotacja_LL(Node ** grand, Node** parent, Node ** p)///chyba jej nie bedzie
 {
 
 }
 
 void rotacja_RL(Node ** grand, Node ** parent, Node ** p)
 {
+    Node *x=(*grand)->right;
+    Node *y=x->left;
+    x->left=y->right;
+    y->right=x;
+    (*grand)->right=y->left;
+    y->left=*grand;
+    *grand=y;
+
 
 }
 
@@ -195,8 +203,8 @@ void szukaj(Node **root, int x)///gotowa bez rotacji
 //cout<<"przed whilem"<<endl;
 Node *p=nullptr;
 ///duza petla while: szuka, znajduje, rotuje az do korzenia
-///while(x!=(*root)->klucz) ///lub p!=*root
-///{
+while(x!=(*root)->klucz) ///lub p!=*root
+{
 ///szukanie wezla o kluczu x, wraz z ustaleniem jego rodzica i dziadka
     p=*root;
     Node *grandpa_p=nullptr;
@@ -252,6 +260,45 @@ Node *p=nullptr;
         else ///czyli szukany x jest po prawej stronie drzewa
         {
             cout<<"wejscie w prawe niedokonczone poddrzewo"<<endl;
+
+
+            cout<<"jestem w prawym poddrzewie"<<endl;
+            if(p->right)     /// czy lewy wezel istnieje
+            {
+                cout<<"prawy wezel istnieje"<<endl;
+                grandpa_p=parent_p;
+                parent_p=p;
+                p=p->right;  ///przesuwam p krok dalej, wiec inne wskazniki tez musza nadazac
+
+                if(x==p->klucz)     ///klucz znaleziony, wiec jaka rotacja jest potrzebna?
+                {
+                    cout<<"pierwszy lewy wezel i jest klucz"<<endl;
+                    break;
+                }
+                ///skoro to nie ten wezel, to patrzymy, w ktora strone teraz...
+                else if(x<p->klucz) /// czy w lewo...
+                {
+                    cout<<"wybor lewej drogi do drugiego wezla"<<endl;
+                    grandpa_p=parent_p;
+                    parent_p=p;
+                    p=p->left;
+                }
+                else                /// czy w prawo
+                {
+                    cout<<"wybor prawej drogi do drugiego wezla"<<endl;
+                    grandpa_p=parent_p;
+                    parent_p=p;
+                    p=p->right;
+                }
+
+            }
+            else    ///nie ma lewego wezla, wiec nie ma x w drzewie
+            {
+                cout<<"BLAD!!! Wezla o kluczu "<<x<<" , nie ma w drzewie."<<endl;
+                p=nullptr;
+                return;
+            }
+
 
         }
     }
@@ -351,52 +398,44 @@ cout<<"wew obslugi rotacji"<<endl;
                     cout<<"Rotacja podwojna w prawo"<<endl;
                     rotacja_R(&grandpa_p);
                     rotacja_R(&grandpa_p);
-                ///a teraz odtworzenie dowiazania do reszty drzewa
-                    if(grandpa_p->klucz<pre_grandpa_p->klucz)
-                        pre_grandpa_p->left=grandpa_p;
-                    else
-                        pre_grandpa_p->right=grandpa_p;
                 }
                 else    /// niejednorodna
                 {
                     ///rotacja podwojna w lewo p i w prawo p
                     rotacja_LR(&grandpa_p, &parent_p, &p);
-                    ///a teraz odtworzenie dowiazania do reszty drzewa
-                    if(grandpa_p->klucz<pre_grandpa_p->klucz)
-                        pre_grandpa_p->left=grandpa_p;
-                    else
-                        pre_grandpa_p->right=grandpa_p;
                 }
             }
             else    /// jesli grandpa_p->right==p
             {
-                //if((*root)->left->left==p){rotacja_RR(&grandpa_p);*root=grandpa_p;}
                 if(parent_p->right==p) ///jednorodna
                 {
                     ///rotacja podwojna w lewo rodzic w lewo p
+                    rotacja_L(&grandpa_p);
+                    rotacja_L(&grandpa_p);
                 }
                 else    ///     niejednorodna
                 {
                     ///rotacja podwojna w prawo p w lewo p
+                    rotacja_RL(&grandpa_p, &parent_p, &p);
                 }
             }
+
+            ///moze tutaj wrzucic warunek podczepienia drzewa?
+            ///a teraz odtworzenie dowiazania do reszty drzewa
+                    if(grandpa_p->klucz<pre_grandpa_p->klucz)
+                        pre_grandpa_p->left=grandpa_p;
+                    else
+                        pre_grandpa_p->right=grandpa_p;
+
         }
 
-///cout<<"przed rotacja "<<endl;
-///cout<<"root "<<(*root)->klucz<<" root left "<<(*root)->left->klucz<<" grand "<<grandpa_p->klucz<<" rodzic "<<parent_p->klucz<<endl;
-///cout<<"po rotacji"<<endl;
-/// cout<<"root "<<(*root)->klucz<<" root left "<<(*root)->left->klucz<<" grand "<<grandpa_p->klucz<<" rodzic "<<parent_p->klucz<<endl;
-///cout<<" root left left "<<(*root)->left->left->klucz<<endl;
-///" root left left "<<(*root)->left->left->klucz<<
             cout<<"root po rotacji "<<(*root)->klucz<<endl;
             preorder_licz(*root);///do usuniecia
-
-
-
-
+}
 
     return;
 }
+
 
 ///************************************************************************************************************
 
@@ -614,7 +653,7 @@ wstawienie(&drzewo, 280);
 //usuwanie(&drzewo, 50);
 //wstawienie_X_elementow(&drzewo, 50);
 preorder_licz(drzewo);
-szukaj(&drzewo, 35);
+szukaj(&drzewo, 37);
 
 //usuwanie(&drzewo, 40);
 //preorder_licz(drzewo);
